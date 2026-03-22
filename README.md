@@ -1,5 +1,7 @@
 # combined_str
 
+[![docs.rs](https://docs.rs/combined_str/badge.svg)](https://docs.rs/combined_str)
+
 A `no_std` Rust library providing `CombinedStr`, a zero-copy, const-generic string combinator that holds N string slices and presents them as a single logical string — without allocating.
 
 ## Features
