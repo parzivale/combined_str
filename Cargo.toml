@@ -2,6 +2,8 @@
 name = "combined_str"
 version = "0.2.0"
 edition = "2024"
+description = "Zero-copy, const-generic string combinator for no_std environments"
+license = "MIT"
 
 [dependencies]
 
