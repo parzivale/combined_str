@@ -44,6 +44,7 @@ impl<'a, const N: usize> Default for CombinedStr<'a, N> {
 }
 
 impl<'a, const N: usize> CombinedStr<'a, N> {
+    #[doc(hidden)]
     pub fn new(strs: [&'a str; N]) -> Self {
         Self { strs }
     }
