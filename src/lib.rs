@@ -31,9 +31,9 @@ use alloc::string::String;
 /// println!("{}", s); // hello, world
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct CombinedStr<'a, const N: usize> {
-    #[doc(hidden)]
-    pub strs: [&'a str; N],
+pub struct CombinedStr<'a, T> {
+    inner: T,
+    str: &'a str,
 }
 
 impl<'a, const N: usize> Default for CombinedStr<'a, N> {
