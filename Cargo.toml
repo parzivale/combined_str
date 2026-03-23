@@ -1,6 +1,6 @@
 [package]
 name = "combined_str"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2024"
 description = "Zero-copy, const-generic string combinator for no_std environments"
 license = "MIT"
@@ -8,3 +8,4 @@ license = "MIT"
 [features]
 default = ["alloc"]
 alloc = []
+nightly = []

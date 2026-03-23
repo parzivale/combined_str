@@ -3,6 +3,8 @@
 //! `CombinedStr` holds N string slices and presents them as a single logical
 //! string without allocating. Use the [`strs!`] macro to construct one.
 #![no_std]
+#![cfg_attr(feature = "nightly", feature(generic_const_exprs))]
+#![cfg_attr(feature = "nightly", allow(incomplete_features))]
 use core::fmt::Display;
 use core::ops::Add;
 #[cfg(feature = "alloc")]
@@ -80,6 +82,29 @@ impl<'a, const N: usize> CombinedStr<'a, N> {
     /// ```
     pub fn is_empty(&self) -> bool {
         self.len() == 0
+    }
+}
+
+#[cfg(feature = "nightly")]
+impl<'a, const N: usize> Add<&'a str> for CombinedStr<'a, N>
+where
+    [(); N + 1]:,
+{
+    type Output = CombinedStr<'a, { N + 1 }>;
+
+    /// Appends a string slice as a new segment, producing a `CombinedStr`
+    /// with one additional segment.
+    ///
+    /// Requires the `nightly` feature.
+    fn add(self, rhs: &'a str) -> Self::Output {
+        let mut out = [""; N + 1];
+        let mut i = 0;
+        while i < N {
+            out[i] = self.strs[i];
+            i += 1;
+        }
+        out[N] = rhs;
+        CombinedStr::new(out)
     }
 }
 
@@ -223,6 +248,32 @@ impl<'a, const N: usize> AddAssign<CombinedStr<'a, N>> for String {
         for i in other.strs {
             self.push_str(i);
         }
+    }
+}
+
+#[cfg(feature = "nightly")]
+impl<'a, const N: usize, const M: usize> Add<CombinedStr<'a, M>> for CombinedStr<'a, N>
+where
+    [(); N + M]:,
+{
+    type Output = CombinedStr<'a, { N + M }>;
+
+    /// Concatenates two `CombinedStr`s into one whose segment count is the sum
+    /// of the operands' segment counts.
+    ///
+    /// Requires the `nightly` feature.
+    fn add(self, rhs: CombinedStr<'a, M>) -> Self::Output {
+        let mut out = [""; N + M];
+        let mut i = 0;
+        while i < N {
+            out[i] = self.strs[i];
+            i += 1;
+        }
+        while i < N + M {
+            out[i] = rhs.strs[i - N];
+            i += 1;
+        }
+        CombinedStr::new(out)
     }
 }
 
@@ -505,6 +556,63 @@ mod tests {
         let c: Cow<str> = Cow::Borrowed("x");
         let result = c + strs!["y", "z"];
         assert_eq!(result, "xyz");
+    }
+
+    #[cfg(feature = "nightly")]
+    #[test]
+    fn add_combined_strs() {
+        let a = strs!["hello", " "];
+        let b = strs!["world", "!"];
+        let c = a + b;
+        assert!(c == *"hello world!");
+        assert_eq!(c.len(), 12);
+    }
+
+    #[cfg(feature = "nightly")]
+    #[test]
+    fn add_combined_strs_empty() {
+        let a = strs!["foo"];
+        let b = strs!["", ""];
+        let c = a + b;
+        assert!(c == *"foo");
+        assert_eq!(c.len(), 3);
+    }
+
+    #[cfg(feature = "nightly")]
+    #[test]
+    fn add_combined_strs_segments() {
+        let a = strs!["a", "b"];
+        let b = strs!["c"];
+        let c = a + b;
+        let segs: &[&str] = c.as_ref();
+        assert_eq!(segs, &["a", "b", "c"]);
+    }
+
+    #[cfg(feature = "nightly")]
+    #[test]
+    fn add_str_slice() {
+        let a = strs!["hello", " "];
+        let b = a + "world";
+        assert!(b == *"hello world");
+        assert_eq!(b.len(), 11);
+    }
+
+    #[cfg(feature = "nightly")]
+    #[test]
+    fn add_str_slice_to_single() {
+        let a = strs!["hi"];
+        let b = a + "!";
+        let segs: &[&str] = b.as_ref();
+        assert_eq!(segs, &["hi", "!"]);
+    }
+
+    #[cfg(feature = "nightly")]
+    #[test]
+    fn add_chained() {
+        let a = strs!["a"];
+        let b = a + "b" + "c";
+        assert!(b == *"abc");
+        assert_eq!(b.len(), 3);
     }
 }
 

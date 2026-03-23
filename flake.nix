@@ -22,6 +22,7 @@
         ...
       }: let
         rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        rustToolchainNightly = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain-nightly.toml;
       in {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
@@ -31,6 +32,14 @@
         devShells.default = pkgs.mkShell {
           packages = [
             rustToolchain
+            pkgs.rust-analyzer
+          ];
+          shellHook = "nu";
+        };
+
+        devShells.nightly = pkgs.mkShell {
+          packages = [
+            rustToolchainNightly
             pkgs.rust-analyzer
           ];
           shellHook = "nu";
