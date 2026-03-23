@@ -30,9 +30,36 @@ mod sealed {
     impl Sealed for range::RangeToInclusive<usize> {}
 }
 
+/// A sealed trait for indexing into a [`CombinedStr`] by range, returning
+/// a [`CombinedStrView`].
+///
+/// Implemented for all standard range types (`Range<usize>`, `RangeTo`,
+/// `RangeFrom`, `RangeFull`, `RangeInclusive`, `RangeToInclusive`) as well
+/// as `(Bound<usize>, Bound<usize>)` tuples and the `core::range` variants.
+///
+/// When the range falls within a single segment the view contains just that
+/// sub-slice; when it spans multiple segments the view borrows the trimmed
+/// first and last slices plus any whole segments in between.
+///
+/// # Examples
+///
+/// ```
+/// use combined_str::{strs, CombinedStrIndex};
+///
+/// let s = strs!["hello", " ", "world"];
+/// let view = CombinedStrIndex::get(&(3..9), &s).unwrap();
+/// assert!(view == *"lo wor");
+/// ```
 pub trait CombinedStrIndex<const N: usize>: sealed::Sealed {
+    /// Returns a [`CombinedStrView`] for the given range, or `None` if
+    /// the range is out of bounds.
     fn get<'a>(&self, slice: &'a CombinedStr<'a, N>) -> Option<CombinedStrView<'a>>;
 
+    /// Returns a [`CombinedStrView`] for the given range.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the range is out of bounds.
     fn index<'a>(self, slice: &'a CombinedStr<'a, N>) -> CombinedStrView<'a>;
 }
 

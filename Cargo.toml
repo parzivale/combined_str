@@ -1,6 +1,6 @@
 [package]
 name = "combined_str"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2024"
 description = "Zero-copy, const-generic string combinator for no_std environments"
 license = "MIT"
@@ -9,3 +9,7 @@ license = "MIT"
 default = ["alloc"]
 alloc = []
 nightly = []
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
