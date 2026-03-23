@@ -1,4 +1,4 @@
-use core::{fmt::Display, ops, slice::SliceIndex};
+use core::{fmt::Display, ops};
 
 #[cfg(feature = "alloc")]
 use core::ops::AddAssign;
@@ -30,7 +30,7 @@ mod sealed {
     impl Sealed for range::RangeToInclusive<usize> {}
 }
 
-pub trait CombinedStrIndex<const N: usize>: SliceIndex<str> + sealed::Sealed {
+pub trait CombinedStrIndex<const N: usize>: sealed::Sealed {
     fn get<'a>(&self, slice: &'a CombinedStr<'a, N>) -> Option<CombinedStrView<'a>>;
 
     fn index<'a>(self, slice: &'a CombinedStr<'a, N>) -> CombinedStrView<'a>;
@@ -53,9 +53,7 @@ pub struct CombinedStrView<'a> {
 impl<'a> CombinedStrView<'a> {
     /// Returns the total byte length of this view.
     pub fn len(&self) -> usize {
-        self.first.len()
-            + self.middle.iter().map(|s| s.len()).sum::<usize>()
-            + self.last.len()
+        self.first.len() + self.middle.iter().map(|s| s.len()).sum::<usize>() + self.last.len()
     }
 
     /// Returns `true` if this view contains no bytes.
@@ -88,7 +86,10 @@ impl<'a> CombinedStrView<'a> {
 
     /// Resolves a `(Bound<usize>, Bound<usize>)` pair into a half-open `start..end`
     /// range, clamped to `len`. Returns `None` if the range is invalid.
-    fn resolve_bounds(bounds: &(ops::Bound<usize>, ops::Bound<usize>), len: usize) -> Option<(usize, usize)> {
+    fn resolve_bounds(
+        bounds: &(ops::Bound<usize>, ops::Bound<usize>),
+        len: usize,
+    ) -> Option<(usize, usize)> {
         let start = match bounds.0 {
             ops::Bound::Included(s) => s,
             ops::Bound::Excluded(s) => s.checked_add(1)?,
