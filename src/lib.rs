@@ -44,6 +44,10 @@ impl<'a, const N: usize> Default for CombinedStr<'a, N> {
 }
 
 impl<'a, const N: usize> CombinedStr<'a, N> {
+    pub fn new(strs: [&'a str; N]) -> Self {
+        Self { strs }
+    }
+
     /// Returns each segment as a byte slice.
     pub fn as_bytes(&self) -> [&[u8]; N] {
         self.strs.map(|item| item.as_bytes())
@@ -514,8 +518,6 @@ mod tests {
 #[macro_export]
 macro_rules! strs {
     ($($s:expr),* $(,)?) => {
-        $crate::CombinedStr {
-            strs: [$($s),*],
-        }
+        $crate::CombinedStr::new([$($s),*])
     };
 }
