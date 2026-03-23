@@ -31,23 +31,19 @@ use alloc::string::String;
 /// println!("{}", s); // hello, world
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct CombinedStr<'a, T> {
+pub struct CombinedStr<'a, T = ()> {
     inner: T,
     str: &'a str,
 }
 
-impl<'a, const N: usize> Default for CombinedStr<'a, N> {
+impl<'a> Default for CombinedStr<'a> {
     /// Returns a `CombinedStr` where every segment is an empty string slice.
     fn default() -> Self {
-        Self { strs: [""; N] }
+        Self { str: "", inner: () }
     }
 }
 
-impl<'a, const N: usize> CombinedStr<'a, N> {
-    pub fn new(strs: [&'a str; N]) -> Self {
-        Self { strs }
-    }
-
+impl<'a, T> CombinedStr<'a, T> {
     /// Returns each segment as a byte slice.
     pub fn as_bytes(&self) -> [&[u8]; N] {
         self.strs.map(|item| item.as_bytes())
@@ -82,10 +78,21 @@ impl<'a, const N: usize> CombinedStr<'a, N> {
     }
 }
 
-impl<'a, const N: usize> From<[&'a str; N]> for CombinedStr<'a, N> {
+impl<'a, T> From<&[&'a str]> for CombinedStr<'a, T> {
     /// Constructs a `CombinedStr` from a fixed-size array of string slices.
-    fn from(strs: [&'a str; N]) -> Self {
-        Self { strs }
+    fn from(strs: &[&'a str]) -> Self {
+        let strs_rest: &[&str] = strs.into_iter().skip(1).collect();
+        if let Some(item) = strs.get(0) {
+            return Self {
+                inner: CombinedStr::from(str_iter),
+                str: item,
+            };
+        } else {
+            Self {
+                str: "",
+                inner: 
+            }
+        }
     }
 }
 
