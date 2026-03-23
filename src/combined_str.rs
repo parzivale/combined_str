@@ -19,7 +19,7 @@ use alloc::string::String;
 /// `CombinedStr` borrows its segments and performs no heap allocation. The
 /// const parameter `N` encodes the number of segments at compile time.
 ///
-/// Construct one with the [`strs!`] macro:
+/// Construct one with the [`strs!`](crate::strs) macro:
 ///
 /// ```
 /// use combined_str::strs;
