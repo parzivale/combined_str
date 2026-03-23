@@ -5,8 +5,6 @@ edition = "2024"
 description = "Zero-copy, const-generic string combinator for no_std environments"
 license = "MIT"
 
-[dependencies]
-
 [features]
 default = ["alloc"]
 alloc = []
