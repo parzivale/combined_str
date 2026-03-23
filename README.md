@@ -16,7 +16,7 @@ A `no_std` Rust library providing `CombinedStr`, a zero-copy, const-generic stri
 
 ```toml
 [dependencies]
-combined_str = "0.2"
+combined_str = "0.4"
 ```
 
 ```rust
@@ -32,6 +32,7 @@ assert_eq!(s.len(), 12);
 | Flag | Default | Description |
 |---|---|---|
 | `alloc` | enabled | Enables `String`/`Cow` support via the `alloc` crate |
+| `nightly` | disabled | Enables `generic_const_exprs` for `CombinedStr<N> + CombinedStr<M>` and `CombinedStr<N> + &str` |
 
 ## License
 
