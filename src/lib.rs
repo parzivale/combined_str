@@ -21,8 +21,7 @@ mod iter;
 mod view;
 
 pub use combined_str::CombinedStr;
-pub use iter::CombinedStrIter;
-pub use view::{CombinedStrIndex, CombinedStrView, CombinedStrViewIter};
+pub use view::{CombinedStrIndex, CombinedStrView};
 
 /// Constructs a [`CombinedStr`] from a comma-separated list of string expressions.
 ///
