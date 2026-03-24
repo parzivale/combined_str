@@ -4,7 +4,7 @@ use crate::CombinedStr;
 ///
 /// Yields each `&str` segment in order. Created by calling
 /// [`into_iter`](IntoIterator::into_iter) on a `CombinedStr`.
-struct CombinedStrIter<'a, const N: usize> {
+pub struct CombinedStrIter<'a, const N: usize> {
     strs: [&'a str; N],
     current: usize,
 }

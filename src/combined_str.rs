@@ -1,4 +1,7 @@
-use core::{fmt::Display, ops::Add};
+use core::{
+    fmt::Display,
+    ops::Add,
+};
 
 #[cfg(feature = "alloc")]
 use core::ops::AddAssign;

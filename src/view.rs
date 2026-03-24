@@ -14,7 +14,7 @@ use alloc::string::String;
 use crate::CombinedStr;
 
 mod sealed {
-    use core::ops;
+    use core::{ops, range};
 
     pub trait Sealed {}
 
@@ -25,6 +25,9 @@ mod sealed {
     impl Sealed for ops::RangeInclusive<usize> {}
     impl Sealed for ops::RangeToInclusive<usize> {}
     impl Sealed for (ops::Bound<usize>, ops::Bound<usize>) {}
+
+    impl Sealed for range::RangeInclusive<usize> {}
+    impl Sealed for range::RangeToInclusive<usize> {}
 }
 
 /// A sealed trait for indexing into a [`CombinedStr`] by range, returning
@@ -374,7 +377,7 @@ impl<'a> AddAssign<CombinedStrView<'a>> for Cow<'a, str> {
 }
 
 /// An iterator over the string segments of a [`CombinedStrView`].
-struct CombinedStrViewIter<'a> {
+pub struct CombinedStrViewIter<'a> {
     first: Option<&'a str>,
     middle: core::slice::Iter<'a, &'a str>,
     last: Option<&'a str>,
@@ -444,3 +447,5 @@ impl_combined_str_index!(ops::RangeFrom<usize>, |s, len| -> (s.start, len));
 impl_combined_str_index!(ops::RangeFull, |_s, len| -> (0, len));
 impl_combined_str_index!(ops::RangeInclusive<usize>, |s, _len| -> (*s.start(), s.end().saturating_add(1)));
 impl_combined_str_index!(ops::RangeToInclusive<usize>, |s, _len| -> (0, s.end.saturating_add(1)));
+impl_combined_str_index!(core::range::RangeInclusive<usize>, |s, _len| -> (s.start, s.last.saturating_add(1)));
+impl_combined_str_index!(core::range::RangeToInclusive<usize>, |s, _len| -> (0, s.last.saturating_add(1)));
